@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-checker
+  labels:
+    app: api-checker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-checker
+  template:
+    metadata:
+      labels:
+        app: api-checker
+    spec:
+      containers:
+        - name: api-checker
+          image: smrcascao/api-checker:1.0.0
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-checker
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  selector:
+    app: api-checker
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
